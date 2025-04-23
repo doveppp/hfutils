@@ -153,7 +153,7 @@ def hf_tar_get_index(repo_id: str, archive_in_repo: str,
             _HF_TAR_IDX_CACHE[cache_key] = idx_data
             return idx_data
 
-
+_HF_TAR_IDX_PFILES_LOCKS = defaultdict(threading.Lock)
 _HF_TAR_IDX_PFILES_CACHE = LRUCache(maxsize=192)
 
 
@@ -202,23 +202,24 @@ def _hf_tar_get_processed_files(repo_id: str, archive_in_repo: str,
     if not no_cache and cache_key in _HF_TAR_IDX_PFILES_CACHE:
         return _HF_TAR_IDX_PFILES_CACHE[cache_key]
     else:
-        index = hf_tar_get_index(
-            repo_id=repo_id,
-            archive_in_repo=archive_in_repo,
-            repo_type=repo_type,
-            revision=revision,
+        with _HF_TAR_IDX_PFILES_LOCKS[cache_key]:
+            index = hf_tar_get_index(
+                repo_id=repo_id,
+                archive_in_repo=archive_in_repo,
+                repo_type=repo_type,
+                revision=revision,
 
-            idx_repo_id=idx_repo_id,
-            idx_file_in_repo=idx_file_in_repo,
-            idx_repo_type=idx_repo_type,
-            idx_revision=idx_revision,
+                idx_repo_id=idx_repo_id,
+                idx_file_in_repo=idx_file_in_repo,
+                idx_repo_type=idx_repo_type,
+                idx_revision=idx_revision,
 
-            hf_token=hf_token,
-            no_cache=no_cache,
-        )
-        files = _hf_files_process(index['files'])
-        _HF_TAR_IDX_PFILES_CACHE[cache_key] = files
-        return files
+                hf_token=hf_token,
+                no_cache=no_cache,
+            )
+            files = _hf_files_process(index['files'])
+            _HF_TAR_IDX_PFILES_CACHE[cache_key] = files
+            return files
 
 
 def hf_tar_list_files(repo_id: str, archive_in_repo: str,
