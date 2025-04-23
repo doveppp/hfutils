@@ -154,9 +154,9 @@ def hf_tar_get_index(repo_id: str, archive_in_repo: str,
             return idx_data
 
 _HF_TAR_IDX_PFILES_LOCKS = defaultdict(threading.Lock)
-_HF_TAR_IDX_PFILES_CACHE = LRUCache(maxsize=192)
+# _HF_TAR_IDX_PFILES_CACHE = LRUCache(maxsize=192)
 
-
+_HF_TAR_IDX_PFILES_CACHE = {}
 def _hf_tar_get_processed_files(repo_id: str, archive_in_repo: str,
                                 repo_type: RepoTypeTyping = 'dataset', revision: str = 'main',
                                 idx_repo_id: Optional[str] = None, idx_file_in_repo: Optional[str] = None,
