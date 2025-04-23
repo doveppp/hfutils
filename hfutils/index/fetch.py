@@ -199,21 +199,21 @@ def _hf_tar_get_processed_files(repo_id: str, archive_in_repo: str,
         idx_repo_type=idx_repo_type,
         idx_revision=idx_revision
     )
-    if not no_cache and cache_key in _HF_TAR_IDX_PFILES_CACHE:
-        return _HF_TAR_IDX_PFILES_CACHE[cache_key]
-    else:
-        with _HF_TAR_IDX_PFILES_LOCKS[cache_key]:
+    with _HF_TAR_IDX_PFILES_LOCKS[cache_key]:
+        if not no_cache and cache_key in _HF_TAR_IDX_PFILES_CACHE:
+            return _HF_TAR_IDX_PFILES_CACHE[cache_key]
+        else:
             index = hf_tar_get_index(
                 repo_id=repo_id,
                 archive_in_repo=archive_in_repo,
                 repo_type=repo_type,
                 revision=revision,
-
+    
                 idx_repo_id=idx_repo_id,
                 idx_file_in_repo=idx_file_in_repo,
                 idx_repo_type=idx_repo_type,
                 idx_revision=idx_revision,
-
+    
                 hf_token=hf_token,
                 no_cache=no_cache,
             )
